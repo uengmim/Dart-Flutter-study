@@ -6,7 +6,7 @@ void main() {
   runApp(const App());
 }
 
-// flutter SDK 에 있는 3개의 core Widget 중 하나를 상송 받아야한다.
+// flutter SDK 에 있는 3개의 core Widget 중 하나를 상속 받아야한다.
 // 여기는 root 위젯이다.
 class App extends StatelessWidget {
   const App({super.key});
