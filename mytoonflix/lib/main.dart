@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mytoonflix/state.dart';
 import 'widgets/button.dart';
 import 'widgets/currency_card.dart';
 
 void main() {
-  runApp(const App());
+  runApp(const MyWidget());
 }
 
 // flutter SDK 에 있는 3개의 core Widget 중 하나를 상속 받아야한다.
@@ -49,7 +50,7 @@ class App extends StatelessWidget {
                         Text(
                           'Welcome back',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
+                            color: Colors.white.withValues(alpha: 0.5),
                             fontSize: 18,
                           ),
                         ),
@@ -64,7 +65,7 @@ class App extends StatelessWidget {
                   "Total Balance",
                   style: TextStyle(
                     fontSize: 22,
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                   ),
                 ),
                 const SizedBox(
@@ -114,7 +115,7 @@ class App extends StatelessWidget {
                       "View All",
                       style: TextStyle(
                         fontSize: 20,
-                        color: Colors.white.withOpacity(0.5),
+                        color: Colors.white.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
