@@ -2,10 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:sharedoc_v1/common/fontsizeconverter.dart';
 import 'package:sharedoc_v1/common/test.dart';
 import 'package:sharedoc_v1/widgets/button.dart';
+import 'package:sharedoc_v1/PickUpWorker/qrscanpage.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  
   @override
   Widget build(BuildContext context) {
     final String nameValue = "홍길동"; // Replace this with your user's name.
@@ -61,7 +68,7 @@ class HomePage extends StatelessWidget {
                 text1: '자물쇠',
                 text2: '등록',
                 imagePath: 'assets/images/check_contained.png',
-                destinationPage: SecondPage(),
+                destinationPage: QRScanner(),
               ),
               const SizedBox(width: 20),
               CustomButton(
