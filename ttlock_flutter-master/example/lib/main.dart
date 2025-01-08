@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:ttlock_flutter_example/models/empmst.dart';
 import 'package:ttlock_flutter_example/widgets/fontsizeconverter.dart';
 import 'homepage.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -26,13 +30,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  //TextField 컨트롤러
   TextEditingController idcontroller = TextEditingController();
   TextEditingController pwcontroller = TextEditingController();
-  // 모든 Widget은 build 메소드를 구현해야한다.
-  @override // auto complete 됨
+
+  @override
   Widget build(BuildContext context) {
-    // material(구글) 또는 cupertino(ios) 위젯을 return
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -81,101 +83,69 @@ class _LoginPageState extends State<LoginPage> {
                   fit: BoxFit.fill,
                 ),
               ),
-              SizedBox(height: 90),
-              // 로그인 폼
+              SizedBox(height: 90), // Login Form
               Form(
-                  child: Container(
-                padding: EdgeInsets.all(0),
-                child: Column(
-                  children: <Widget>[
-                    Column(
-                      children: [
-                        TextField(
-                          controller: idcontroller,
-                          decoration: InputDecoration(
-                            labelText: '아이디',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                child: Container(
+                  padding: EdgeInsets.all(0),
+                  child: Column(
+                    children: <Widget>[
+                      Column(
+                        children: [
+                          TextField(
+                            controller: idcontroller,
+                            decoration: InputDecoration(
+                              labelText: '아이디',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
                             ),
+                            keyboardType: TextInputType.text,
                           ),
-                          //정보에 따라 키보드 자판이 달라짐
-                          keyboardType: TextInputType.text,
-                          onChanged: (value) {
-                            // Handle ID change
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        TextField(
-                          controller: pwcontroller,
-                          decoration: InputDecoration(
-                            labelText: '비밀번호',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                          SizedBox(height: 10),
+                          TextField(
+                            controller: pwcontroller,
+                            decoration: InputDecoration(
+                              labelText: '비밀번호',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
                             ),
+                            obscureText: true,
                           ),
-                          //정보에 따라 키보드 자판이 달라짐
-                          keyboardType: TextInputType.text,
-                          //비밀번호 *로 표시
-                          obscureText: true,
-                          onChanged: (value) {
-                            // Handle Password change
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        ElevatedButton(
-                          //클릭 이벤트
-                          onPressed: () {
-                            // if (idcontroller.text == 'admin' &&
-                            //     pwcontroller.text == '1111') {
-                            //   Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) => const HomePage()),
-                            //   );
-                            // } else if (idcontroller.text == 'admin' &&
-                            //     pwcontroller.text != '1111') {
-                            //   pwCheck(context);
-                            // } else {
-                            //   loginCheck(context);
-                            // }
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomePage()),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF3A7DFF),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
+                          SizedBox(height: 10),
+                          ElevatedButton(
+                            onPressed: () async {
+                              await login(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF3A7DFF),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              minimumSize: Size(double.infinity, 50),
                             ),
-                            minimumSize: Size(double.infinity, 50),
-                          ),
-                          child: Text('로그인',
+                            child: Text(
+                              '로그인',
                               style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                              )),
-                        ),
-                      ],
-                    ),
-                  ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              )),
+              ),
               SizedBox(height: 20),
-              // Copyright 라벨
+              // Copyright label
               const Fontsizeconverter(
                 text: 'Copyrightⓒ ISTN',
-                baseFontSize: 10.0, // 기본 폰트 사이즈 설정
-                color: Colors.grey, // 텍스트 색상 설정
-                fontWeight: FontWeight.bold, // 폰트 두께 설정
-              ),
-              // Version Label
-              Text(
-                '', // Version text can be set here
-                style: TextStyle(fontSize: 10, color: Colors.grey),
-                textAlign: TextAlign.end,
+                baseFontSize: 10.0,
+                color: Colors.grey,
+                fontWeight: FontWeight.bold,
               ),
             ],
           ),
@@ -184,6 +154,30 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // Login Check
+  Future<void> login(BuildContext context) async {
+    List<Empmst> employeeList = await getEmployeeList();
+
+    bool isValidUser = false;
+    for (var employee in employeeList) {
+      if (employee.empno == idcontroller.text &&
+          employee.pin == pwcontroller.text) {
+        isValidUser = true;
+        break;
+      }
+    }
+
+    if (isValidUser) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    } else {
+      loginCheck(context);
+    }
+  }
+
+  // Login Failure Message
   void loginCheck(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -198,17 +192,44 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void pwCheck(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          '비밀번호가 일치하지 않습니다.',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white),
-        ),
-        duration: Duration(seconds: 3),
-        backgroundColor: Colors.grey,
-      ),
-    );
+  // Fetch employee list (JSON format)
+  Future<List<Empmst>> getEmployeeList() async {
+    try {
+      HttpClient httpClient = HttpClient();
+      final body = {
+        'userId': '',
+        'query': 'SELECT * FROM emp',
+      };
+
+      HttpClientRequest request = await httpClient.postUrl(
+        Uri.parse(
+            'http://istnecdev.duckdns.org:3001/api/ttLockService/useCustomQuery'),
+      );
+
+      request.headers.contentType = ContentType.json;
+      request.write(jsonEncode(body));
+      HttpClientResponse response = await request.close();
+
+      if (response.statusCode == 200) {
+        String jsonResponse = await response.transform(utf8.decoder).join();
+        var data = jsonDecode(jsonResponse);
+
+        List<dynamic> supervisorList = data['data']['supervisorList'];
+
+        List<Empmst> employeeList =
+            supervisorList.map<Empmst>((e) => Empmst.fromJson(e)).toList();
+
+        // Return the list of employees
+        return employeeList;
+      } else {
+        // Handle error if response status code is not 200
+        print('Error: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      // Handle any errors that occur
+      print('Error: $e');
+      return [];
+    }
   }
 }

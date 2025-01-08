@@ -202,8 +202,8 @@ class _ScanPageState extends State<ScanPage> {
                     TTLockScanModel scanModel = _lockList[index];
                     title = 'Lock：${scanModel.lockName}';
                     subtitle = scanModel.isInited
-                        ? '등록되어 있는 자물쇠입니다.'
-                        : '자물쇠를 눌러 등록해주세요.';
+                        ? '이미 등록되어 있는 자물쇠입니다.'
+                        : '클릭하여 자물쇠를 등록해주세요.';
                     if (scanModel.isInited) {
                       textColor = Colors.grey;
                     }

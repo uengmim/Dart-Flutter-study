@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:ttlock_flutter_example/lockadmin.dart';
 import 'package:ttlock_flutter_example/lockregistpage.dart';
+import 'package:ttlock_flutter_example/unlock_page.dart';
 import 'package:ttlock_flutter_example/widgets/button.dart';
 import 'package:ttlock_flutter_example/widgets/fontsizeconverter.dart';
-
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,8 +13,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-
   @override
   Widget build(BuildContext context) {
     final String nameValue = "홍길동"; // Replace this with your user's name.
@@ -76,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                 text1: '자물쇠',
                 text2: '초기화',
                 imagePath: 'assets/images/arrow_rotate_left.png',
-                destinationPage: LockRegistPage(),
+                destinationPage: LockAdminPage(),
               ),
             ]),
             const SizedBox(height: 20),
