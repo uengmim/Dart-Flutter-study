@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:ttlock_flutter/ttgateway.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 import 'package:bmprogresshud/progresshud.dart';
-import 'package:ttlock_flutter_example/homepage.dart';
 
 enum ScanType { lock, gateway }
 
@@ -18,7 +16,6 @@ enum Command { unlock }
 
 class _ScanPageState extends State<LockAdminPage> {
   ScanType? scanType;
-  BuildContext? _context;
 
   String lockData = '';
 
@@ -111,7 +108,6 @@ class _ScanPageState extends State<LockAdminPage> {
         body: Material(child: ProgressHud(
           child: Container(
             child: Builder(builder: (context) {
-              _context = context;
               return getListView();
             }),
           ),
