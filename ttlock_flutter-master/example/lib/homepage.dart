@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:ttlock_flutter_example/lockadmin.dart';
 import 'package:ttlock_flutter_example/lockregistpage.dart';
-import 'package:ttlock_flutter_example/unlock_page.dart';
+import 'package:ttlock_flutter_example/models/empmst.dart';
 import 'package:ttlock_flutter_example/widgets/button.dart';
 import 'package:ttlock_flutter_example/widgets/fontsizeconverter.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Empmst employee;
+
+  const HomePage({super.key, required this.employee});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -15,8 +17,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    final String nameValue = "홍길동"; // Replace this with your user's name.
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             // Welcome Messages
             Fontsizeconverter(
-              text: "$nameValue 님,",
+              text: "${widget.employee.empnm} 님,",
               baseFontSize: 40.0, // 기본 폰트 사이즈 설정
               color: const Color(0xFF3A7DFF),
             ),

@@ -132,8 +132,8 @@ class _ScanPageState extends State<LockAdminPage> {
                   String subtitle;
                   Color textColor = Colors.black;
                   TTLockScanModel scanModel = _lockList[index];
-                  title = '관리 번호${scanModel.lockMac}';
-                  subtitle = '자물쇠 이름${scanModel.lockName}';
+                  title = '관리 번호 ${scanModel.lockMac}';
+                  subtitle = '자물쇠 이름 ${scanModel.lockName}';
 
                   TextStyle textStyle = new TextStyle(color: textColor);
 

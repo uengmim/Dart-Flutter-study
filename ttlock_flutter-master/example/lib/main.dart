@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ttlock_flutter_example/models/empmst.dart';
+import 'package:ttlock_flutter_example/qrcode_page.dart';
 import 'package:ttlock_flutter_example/widgets/fontsizeconverter.dart';
 import 'homepage.dart';
-
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MyApp());
@@ -115,7 +115,13 @@ class _LoginPageState extends State<LoginPage> {
                           SizedBox(height: 10),
                           ElevatedButton(
                             onPressed: () async {
-                              await login(context);
+                              //await login(context);
+                                Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => QrcodePage(), // Pass employee to HomePage
+                                ),
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFF3A7DFF),
@@ -154,30 +160,73 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Login Check
+  // 로그인 체크
   Future<void> login(BuildContext context) async {
-    List<Empmst> employeeList = await getEmployeeList();
-
-    bool isValidUser = false;
-    for (var employee in employeeList) {
-      if (employee.empno == idcontroller.text &&
-          employee.pin == pwcontroller.text) {
-        isValidUser = true;
-        break;
+    try {
+      if (idcontroller.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              '아이디를를 입력하세요.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white),
+            ),
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.grey,
+          ),
+        );
+        return;
+      } else if (pwcontroller.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              '비밀번호를 입력하세요.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white),
+            ),
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.grey,
+          ),
+        );
+        return;
       }
-    }
+      // 데이터 가져오기
+      List<Empmst> employeeList = await getEmployeeList();
 
-    if (isValidUser) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-    } else {
-      loginCheck(context);
+      // 로그인 유저 확인
+      bool isValidUser = false;
+      Empmst? validEmployee;
+
+      // 로그인 정보 확인
+      for (var employee in employeeList) {
+        if (employee.empno == idcontroller.text &&
+            employee.pin == pwcontroller.text) {
+          isValidUser = true;
+          validEmployee = employee;
+          break;
+        }
+      }
+
+      // 로그인 성공 시 HomePage로 이동
+      if (isValidUser && validEmployee != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                HomePage(employee: validEmployee!), // Pass employee to HomePage
+          ),
+        );
+      } else {
+        // 실패 시 메시지 출력
+        loginCheck(context);
+      }
+    } catch (error) {
+      // 에러 발생 시 출력
+      print("오류가 발생했습니다.: $error");
     }
   }
 
-  // Login Failure Message
+  // 로그인 실패 메시지
   void loginCheck(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -192,43 +241,44 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Fetch employee list (JSON format)
+  // 데이터 가져오기
   Future<List<Empmst>> getEmployeeList() async {
     try {
-      HttpClient httpClient = HttpClient();
-      final body = {
+      final String url =
+          'http://istnecdev.duckdns.org:3001/api/ttLockService/useCustomQuery';
+      final Map<String, dynamic> body = {
         'userId': '',
-        'query': 'SELECT * FROM emp',
+        'query': "SELECT * FROM empmst;"
       };
-
-      HttpClientRequest request = await httpClient.postUrl(
-        Uri.parse(
-            'http://istnecdev.duckdns.org:3001/api/ttLockService/useCustomQuery'),
+      print(body);
+      // Make the HTTP request
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
       );
+      print(response.body);
 
-      request.headers.contentType = ContentType.json;
-      request.write(jsonEncode(body));
-      HttpClientResponse response = await request.close();
-
+      // 상태값 확인인
       if (response.statusCode == 200) {
-        String jsonResponse = await response.transform(utf8.decoder).join();
-        var data = jsonDecode(jsonResponse);
+        final Map<String, dynamic> jsonResponse =
+            jsonDecode(utf8.decode(response.bodyBytes));
 
-        List<dynamic> supervisorList = data['data']['supervisorList'];
+        // JSON 데이터에서 result 키의 값을 가져옴
+        var employeeListJson = jsonResponse['result'];
 
-        List<Empmst> employeeList =
-            supervisorList.map<Empmst>((e) => Empmst.fromJson(e)).toList();
-
-        // Return the list of employees
-        return employeeList;
+        // JSON 데이터를 Empmst 객체로 변환
+        return List<Empmst>.from(
+          employeeListJson.map((item) => Empmst.fromJson(item)),
+        );
       } else {
-        // Handle error if response status code is not 200
-        print('Error: ${response.statusCode}');
+        // 상태값이 200이 아닌 경우 빈 목록 반환
+        print('로그인 목록을 가져오는데 실패하였습니다.: ${response.statusCode}');
         return [];
       }
-    } catch (e) {
-      // Handle any errors that occur
-      print('Error: $e');
+    } catch (error) {
+      // 에러 발생 시 빈 목록 반환
+      print('오류가 발생하였습니다.: $error');
       return [];
     }
   }
