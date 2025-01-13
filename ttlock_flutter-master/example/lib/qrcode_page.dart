@@ -73,7 +73,13 @@ class _QrcodePageState extends State<QrcodePage> {
                 // Button (Manual Input)
                 ElevatedButton(
                   onPressed: () {
-                    // Add functionality for button press
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            LockAdminPage(), // Pass employee to HomePage
+                      ),
+                    );
                     print("Button pressed");
                   },
                   style: ElevatedButton.styleFrom(

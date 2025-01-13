@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:ttlock_flutter_example/map_page.dart';
 import 'package:ttlock_flutter_example/models/empmst.dart';
 import 'package:ttlock_flutter_example/qrcode_page.dart';
 import 'package:ttlock_flutter_example/widgets/fontsizeconverter.dart';
@@ -116,10 +117,11 @@ class _LoginPageState extends State<LoginPage> {
                           ElevatedButton(
                             onPressed: () async {
                               //await login(context);
-                                Navigator.push(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => QrcodePage(), // Pass employee to HomePage
+                                  builder: (context) =>
+                                      MapPage(), // Pass employee to HomePage
                                 ),
                               );
                             },
