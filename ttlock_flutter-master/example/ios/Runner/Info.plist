@@ -46,5 +46,7 @@
 	<!-- Permission options for the `camera` group -->
 	<key>NSCameraUsageDescription</key>
 	<string>라벨 QR코드 조회를 위해 카메라 사용 권한을 허용하시겠습니까?</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>마이크 권한을 허용하시겠습니까?</string>
 </dict>
 </plist>

@@ -1,38 +1,49 @@
 import 'dart:convert';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:ttlock_flutter_example/map_page.dart';
+import 'package:ttlock_flutter_example/lockclose_page.dart';
 import 'package:ttlock_flutter_example/models/empmst.dart';
-import 'package:ttlock_flutter_example/qrcode_page.dart';
 import 'package:ttlock_flutter_example/widgets/fontsizeconverter.dart';
 import 'homepage.dart';
 import 'package:http/http.dart' as http;
 
-void main() {
-  runApp(MyApp());
-}
+Future<void> main() async {
+  // 비동기 데이터 다룸으로 아래 코드 추가
+  // 다음에 호출되는 함수 모두 실행 끝날 때까지 기다림
+  WidgetsFlutterBinding.ensureInitialized();
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  // 기기에서 사용 가능한 카메라 목록 불러오기
+  final cameras = await availableCameras();
+
+  // 사용 가능한 카메라 중 첫 번째 카메라 사용
+  final firstCamera = cameras.first;
+
+  runApp(
+    MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
-    );
-  }
+      home: LoginPage(
+        camera: firstCamera,
+      ),
+    ),
+  );
 }
 
 // flutter SDK 에 있는 3개의 core Widget 중 하나를 상속 받아야한다.
 // 여기는 root 위젯이다.
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key, required this.camera});
 
+  final CameraDescription camera;
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState(camera);
 }
 
 class _LoginPageState extends State<LoginPage> {
   TextEditingController idcontroller = TextEditingController();
   TextEditingController pwcontroller = TextEditingController();
+
+  CameraDescription camera;
+  _LoginPageState(this.camera);
 
   @override
   Widget build(BuildContext context) {
@@ -120,8 +131,9 @@ class _LoginPageState extends State<LoginPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      MapPage(), // Pass employee to HomePage
+                                  builder: (context) => LockclosePage(
+                                      camera:
+                                          camera), // Pass employee to HomePage
                                 ),
                               );
                             },
@@ -261,7 +273,7 @@ class _LoginPageState extends State<LoginPage> {
       );
       print(response.body);
 
-      // 상태값 확인인
+      // 상태값 확인
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse =
             jsonDecode(utf8.decode(response.bodyBytes));
