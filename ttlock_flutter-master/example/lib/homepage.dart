@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ttlock_flutter_example/lockadmin.dart';
 import 'package:ttlock_flutter_example/lockregistpage.dart';
 import 'package:ttlock_flutter_example/models/empmst.dart';
+import 'package:ttlock_flutter_example/qrcode_page.dart';
 import 'package:ttlock_flutter_example/widgets/button.dart';
 import 'package:ttlock_flutter_example/widgets/fontsizeconverter.dart';
 
@@ -19,7 +20,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         automaticallyImplyLeading: false, // Hides back button
         title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                 text1: '자물쇠',
                 text2: '회수',
                 imagePath: 'assets/images/flip_left.png',
-                destinationPage: LockRegistPage(),
+                destinationPage: QrcodePage(),
               ),
             ]),
             const SizedBox(height: 20),

@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:ttlock_flutter_example/lockclose_page.dart';
 import 'package:ttlock_flutter_example/models/empmst.dart';
+import 'package:ttlock_flutter_example/qrcode_page.dart';
 import 'package:ttlock_flutter_example/widgets/fontsizeconverter.dart';
 import 'homepage.dart';
 import 'package:http/http.dart' as http;
@@ -42,6 +43,8 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController idcontroller = TextEditingController();
   TextEditingController pwcontroller = TextEditingController();
 
+  bool _isLoading = false; // 로딩 상태를 관리하는 변수
+
   CameraDescription camera;
   _LoginPageState(this.camera);
 
@@ -49,127 +52,139 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // 제목 및 부제목
-              const SizedBox(
-                height: 50,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 50),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const Fontsizeconverter(
-                        text: '문서 파쇄 관리도',
-                        baseFontSize: 36.0, // 기본 폰트 사이즈 설정
-                        color: Colors.black, // 텍스트 색상 설정
-                      ),
-                      const Fontsizeconverter(
-                        text: '스마트하게',
-                        baseFontSize: 36.0, // 기본 폰트 사이즈 설정
-                        color: Colors.black, // 텍스트 색상 설정
-                      ),
-                      SizedBox(height: 10),
-                      const Fontsizeconverter(
-                        text: 'Admin Login',
-                        baseFontSize: 24.0, // 기본 폰트 사이즈 설정
-                        color: Colors.red, // 텍스트 색상 설정
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              SizedBox(height: 90),
-              //이미지(가운데)
-              Center(
-                child: Image.asset(
-                  'assets/images/splash.png',
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.fill,
-                ),
-              ),
-              SizedBox(height: 90), // Login Form
-              Form(
-                child: Container(
-                  padding: EdgeInsets.all(0),
-                  child: Column(
-                    children: <Widget>[
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextField(
-                            controller: idcontroller,
-                            decoration: InputDecoration(
-                              labelText: '아이디',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                            ),
-                            keyboardType: TextInputType.text,
+                          const Fontsizeconverter(
+                            text: '문서 파쇄 관리도',
+                            baseFontSize: 36.0,
+                            color: Colors.black,
+                          ),
+                          const Fontsizeconverter(
+                            text: '스마트하게',
+                            baseFontSize: 36.0,
+                            color: Colors.black,
                           ),
                           SizedBox(height: 10),
-                          TextField(
-                            controller: pwcontroller,
-                            decoration: InputDecoration(
-                              labelText: '비밀번호',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                            ),
-                            obscureText: true,
-                          ),
-                          SizedBox(height: 10),
-                          ElevatedButton(
-                            onPressed: () async {
-                              //await login(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LockclosePage(
-                                      camera:
-                                          camera), // Pass employee to HomePage
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF3A7DFF),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              minimumSize: Size(double.infinity, 50),
-                            ),
-                            child: Text(
-                              '로그인',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                          const Fontsizeconverter(
+                            text: 'Admin Login',
+                            baseFontSize: 24.0,
+                            color: Colors.red,
                           ),
                         ],
                       ),
                     ],
                   ),
+                  SizedBox(height: 90),
+                  Center(
+                    child: Image.asset(
+                      'assets/images/splash.png',
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  SizedBox(height: 90),
+                  // Login Form
+                  Form(
+                    child: Container(
+                      padding: EdgeInsets.all(0),
+                      child: Column(
+                        children: <Widget>[
+                          Column(
+                            children: [
+                              TextField(
+                                controller: idcontroller,
+                                decoration: InputDecoration(
+                                  labelText: '아이디',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                                keyboardType: TextInputType.text,
+                              ),
+                              SizedBox(height: 10),
+                              TextField(
+                                controller: pwcontroller,
+                                decoration: InputDecoration(
+                                  labelText: '비밀번호',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                                obscureText: true,
+                              ),
+                              SizedBox(height: 10),
+                              ElevatedButton(
+                                onPressed: _isLoading
+                                    ? null // 로딩 중이면 버튼 비활성화
+                                    : () async {
+                                        //await login(context);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                QrcodePage(),
+                                          ),
+                                        );
+                                      },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFF3A7DFF),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  minimumSize: Size(double.infinity, 50),
+                                ),
+                                child: Text(
+                                  '로그인',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  const Fontsizeconverter(
+                    text: 'Copyrightⓒ ISTN',
+                    baseFontSize: 10.0,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // 로딩 인디케이터
+          if (_isLoading)
+            Container(
+              // ignore: deprecated_member_use
+              color: Colors.black.withOpacity(0.5), // 배경을 어둡게
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
                 ),
               ),
-              SizedBox(height: 20),
-              // Copyright label
-              const Fontsizeconverter(
-                text: 'Copyrightⓒ ISTN',
-                baseFontSize: 10.0,
-                color: Colors.grey,
-                fontWeight: FontWeight.bold,
-              ),
-            ],
-          ),
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -181,7 +196,7 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              '아이디를를 입력하세요.',
+              '아이디를 입력하세요.',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white),
             ),
@@ -204,6 +219,11 @@ class _LoginPageState extends State<LoginPage> {
         );
         return;
       }
+      // 로딩 상태 설정
+      setState(() {
+        _isLoading = true;
+      });
+
       // 데이터 가져오기
       List<Empmst> employeeList = await getEmployeeList();
 
@@ -211,6 +231,9 @@ class _LoginPageState extends State<LoginPage> {
       bool isValidUser = false;
       Empmst? validEmployee;
 
+      if (employeeList.isEmpty) {
+        loginCheck(context);
+      }
       // 로그인 정보 확인
       for (var employee in employeeList) {
         if (employee.empno == idcontroller.text &&
@@ -220,7 +243,10 @@ class _LoginPageState extends State<LoginPage> {
           break;
         }
       }
-
+      // 로딩 상태 해제
+      setState(() {
+        _isLoading = false;
+      });
       // 로그인 성공 시 HomePage로 이동
       if (isValidUser && validEmployee != null) {
         Navigator.push(
@@ -235,13 +261,20 @@ class _LoginPageState extends State<LoginPage> {
         loginCheck(context);
       }
     } catch (error) {
-      // 에러 발생 시 출력
+      // 로딩 상태 해제 및 에러 발생 시 출력
+      setState(() {
+        _isLoading = false;
+      });
       print("오류가 발생했습니다.: $error");
     }
   }
 
   // 로그인 실패 메시지
   void loginCheck(BuildContext context) {
+    // 로딩 상태 해제
+    setState(() {
+      _isLoading = false;
+    });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
@@ -281,17 +314,28 @@ class _LoginPageState extends State<LoginPage> {
         // JSON 데이터에서 result 키의 값을 가져옴
         var employeeListJson = jsonResponse['result'];
 
+        // employeeListJson이 null인 경우 빈 리스트를 반환
+        if (employeeListJson == null) {
+          return [];
+        }
+
         // JSON 데이터를 Empmst 객체로 변환
         return List<Empmst>.from(
           employeeListJson.map((item) => Empmst.fromJson(item)),
         );
       } else {
+        setState(() {
+          _isLoading = false;
+        });
         // 상태값이 200이 아닌 경우 빈 목록 반환
         print('로그인 목록을 가져오는데 실패하였습니다.: ${response.statusCode}');
         return [];
       }
     } catch (error) {
       // 에러 발생 시 빈 목록 반환
+      setState(() {
+        _isLoading = false;
+      });
       print('오류가 발생하였습니다.: $error');
       return [];
     }

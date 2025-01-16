@@ -40,70 +40,72 @@ class _QrcodePageState extends State<QrcodePage> {
         title: Text(title, style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
-      body: Column(
-        children: <Widget>[
-          //_buildQrView를 실행하면서 스캐너를 뷰에 뿌려줌
-          Expanded(flex: 2, child: _buildQrView(context)),
-          SizedBox(height: 10),
-          const Text(
-            '보안 문서함의 QR코드를 스캔해주세요.',
-            style: TextStyle(color: Colors.black, fontSize: 16),
-          ),
-          const SizedBox(height: 30),
-
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Input field (TextField)
-                TextField(
-                  controller: boxcontroller,
-                  keyboardType: TextInputType.phone, // Telephone input
-                  decoration: InputDecoration(
-                    labelText: "문서함 번호",
-                    labelStyle: TextStyle(color: Colors.grey),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Button (Manual Input)
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            LockAdminPage(), // Pass employee to HomePage
-                      ),
-                    );
-                    print("Button pressed");
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Color(0xFF3A7DFF),
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    minimumSize: Size(double.infinity, 50),
-                  ),
-                  child: Text(
-                    "수동 입력",
-                    style: TextStyle(
-                      fontSize: 15, // Adjust the font size here
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
+      body: Stack(children: [
+        Column(
+          children: <Widget>[
+            //_buildQrView를 실행하면서 스캐너를 뷰에 뿌려줌
+            Expanded(flex: 2, child: _buildQrView(context)),
+            SizedBox(height: 10),
+            const Text(
+              '보안 문서함의 QR코드를 스캔해주세요.',
+              style: TextStyle(color: Colors.black, fontSize: 16),
             ),
-          ),
-        ],
-      ),
+            const SizedBox(height: 30),
+
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Input field (TextField)
+                  TextField(
+                    controller: boxcontroller,
+                    keyboardType: TextInputType.phone, // Telephone input
+                    decoration: InputDecoration(
+                      labelText: "문서함 번호",
+                      labelStyle: TextStyle(color: Colors.grey),
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Button (Manual Input)
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              LockAdminPage(), // Pass employee to HomePage
+                        ),
+                      );
+                      print("Button pressed");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Color(0xFF3A7DFF),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      minimumSize: Size(double.infinity, 50),
+                    ),
+                    child: Text(
+                      "수동 입력",
+                      style: TextStyle(
+                        fontSize: 15, // Adjust the font size here
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ]),
     );
   }
 
@@ -145,22 +147,18 @@ class _QrcodePageState extends State<QrcodePage> {
 
       setState(() {
         boxcontroller.text = scanData.code as String; // 스캔된 데이터를 담는다.
-        print('barcode_result----------------');
-
-        // result를 다시 url로 담는다.
-        //String url = result!.code.toString();
-
-        if (counter == 1) {
-          // QR이 인식 되었을 경우 스캐너를 닫으며 결과를 넘긴다.
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  LockAdminPage(), // Pass employee to HomePage
-            ),
-          );
-        }
       });
+
+      if (counter == 1) {
+        // QR이 인식 되었을 경우 스캐너를 닫으며 결과를 넘긴다.
+        counter = 0;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LockAdminPage(), // Pass employee to HomePage
+          ),
+        );
+      }
     });
   }
 
@@ -170,7 +168,7 @@ class _QrcodePageState extends State<QrcodePage> {
     if (!p) {
       // 카메라 사용 권한이 없을 경우
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('no Permission')),
+        const SnackBar(content: Text('카메라 사용 권한이 없습니다.')),
       );
     }
   }
