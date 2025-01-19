@@ -1,14 +1,17 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:ttlock_flutter_example/lockadmin.dart';
+import 'package:ttlock_flutter_example/qrrecog_page.dart';
 
 class QrcodePage extends StatefulWidget {
-  const QrcodePage({super.key});
+  final CameraDescription camera;
+
+  const QrcodePage({super.key, required this.camera});
 
   @override
-  State<QrcodePage> createState() => _QrcodePageState();
+  State<QrcodePage> createState() => _QrcodePageState(camera);
 }
 
 class _QrcodePageState extends State<QrcodePage> {
@@ -16,7 +19,8 @@ class _QrcodePageState extends State<QrcodePage> {
   QRViewController? controller;
   TextEditingController boxcontroller = TextEditingController();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-
+  CameraDescription camera;
+  _QrcodePageState(this.camera);
   // qr_code_scanner의 hot reload를 보장하려면 안드로이드의 경우에는 pauseCamera(),
   // iOS의 경우에는 resumeCamera()를 처리해줘야한다.
   @override
@@ -77,8 +81,9 @@ class _QrcodePageState extends State<QrcodePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              LockAdminPage(), // Pass employee to HomePage
+                          builder: (context) => QRRecogPage(
+                            camera: camera,
+                          ), // Pass employee to HomePage
                         ),
                       );
                       print("Button pressed");
@@ -115,8 +120,8 @@ class _QrcodePageState extends State<QrcodePage> {
             MediaQuery.of(context).size.height < 400)
         ? 250.0
         : 300.0;
-    // To ensure the Scanner view is properly sizes after rotation
-    // we need to listen for Flutter SizeChanged notification and update controller
+    // 스캐너가 적절한 크기로 조정되는지 확인
+    // Flutter SizeChanged 알림을 수신하고 컨트롤러를 업데이트
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated, // QRView가 생성되면 _onQRViewCreated를 실행
@@ -139,11 +144,10 @@ class _QrcodePageState extends State<QrcodePage> {
     });
 
     // 인식시킬 QR코드가 여러개 붙어있을 경우 여러개를 한번에 인식해버리는
-    // 문제가 발생하여 먼저 인식된 QR코드 하나만 인식하기위한 코드
     int counter = 0;
     controller.scannedDataStream.listen((scanData) async {
       counter++; // QR코드가 인식되면 counter를 1 올려준다.
-      //await controller.pauseCamera(); // 인식되었으니 카메라를 멈춘다.
+      await controller.pauseCamera(); // 인식되었으니 카메라를 멈춘다.
 
       setState(() {
         boxcontroller.text = scanData.code as String; // 스캔된 데이터를 담는다.
@@ -155,7 +159,9 @@ class _QrcodePageState extends State<QrcodePage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => LockAdminPage(), // Pass employee to HomePage
+            builder: (context) => QRRecogPage(
+              camera: camera,
+            ),
           ),
         );
       }

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:ttlock_flutter_example/lockclose_page.dart';
 import 'package:ttlock_flutter_example/models/empmst.dart';
 import 'package:ttlock_flutter_example/qrcode_page.dart';
 import 'package:ttlock_flutter_example/widgets/fontsizeconverter.dart';
@@ -135,8 +134,9 @@ class _LoginPageState extends State<LoginPage> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) =>
-                                                QrcodePage(),
+                                            builder: (context) => QrcodePage(
+                                              camera: camera,
+                                            ),
                                           ),
                                         );
                                       },
@@ -252,8 +252,10 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                HomePage(employee: validEmployee!), // Pass employee to HomePage
+            builder: (context) => HomePage(
+              employee: validEmployee!,
+              camera: camera,
+            ),
           ),
         );
       } else {

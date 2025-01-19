@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:ttlock_flutter_example/lockadmin.dart';
 import 'package:ttlock_flutter_example/lockregistpage.dart';
@@ -8,14 +9,18 @@ import 'package:ttlock_flutter_example/widgets/fontsizeconverter.dart';
 
 class HomePage extends StatefulWidget {
   final Empmst employee;
+  final CameraDescription camera;
 
-  const HomePage({super.key, required this.employee});
+  const HomePage({super.key, required this.employee, required this.camera});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState(camera);
 }
 
 class _HomePageState extends State<HomePage> {
+
+  CameraDescription camera;
+  _HomePageState(this.camera);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                 text1: '자물쇠',
                 text2: '회수',
                 imagePath: 'assets/images/flip_left.png',
-                destinationPage: QrcodePage(),
+                destinationPage: QrcodePage(camera: camera,),
               ),
             ]),
             const SizedBox(height: 20),
