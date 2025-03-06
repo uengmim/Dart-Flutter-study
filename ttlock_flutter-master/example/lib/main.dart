@@ -130,15 +130,15 @@ class _LoginPageState extends State<LoginPage> {
                                 onPressed: _isLoading
                                     ? null // 로딩 중이면 버튼 비활성화
                                     : () async {
-                                        //await login(context);
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => QrcodePage(
-                                              camera: camera,
-                                            ),
-                                          ),
-                                        );
+                                        await login(context);
+                                        // Navigator.push(
+                                        //   context,
+                                        //   MaterialPageRoute(
+                                        //     builder: (context) => QrcodePage(
+                                        //       camera: camera,
+                                        //     ),
+                                        //   ),
+                                        // );
                                       },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFF3A7DFF),

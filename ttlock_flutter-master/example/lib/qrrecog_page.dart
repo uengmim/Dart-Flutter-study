@@ -4,6 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 import 'package:bmprogresshud/progresshud.dart';
 import 'package:ttlock_flutter_example/lockclose_page.dart';
+import 'package:ttlock_flutter_example/qrcode_page.dart';
 
 enum ScanType { lock, gateway }
 
@@ -115,9 +116,21 @@ class _QRRecogPage extends State<QRRecogPage> {
     String title = '자물쇠 스캔';
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: Text(title),
-      ),
+          centerTitle: true,
+          title: Text(title),
+          leading: IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => QrcodePage(
+                    camera: camera,
+                  ), // Pass employee to HomePage
+                ),
+              );
+            },
+            icon: Icon(Icons.arrow_back),
+          )),
       body: Material(
         child: ProgressHud(
           child: Container(

@@ -78,6 +78,7 @@ class _QrcodePageState extends State<QrcodePage> {
                   // Button (Manual Input)
                   ElevatedButton(
                     onPressed: () {
+                      this.controller?.pauseCamera();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -148,13 +149,11 @@ class _QrcodePageState extends State<QrcodePage> {
     controller.scannedDataStream.listen((scanData) async {
       counter++; // QR코드가 인식되면 counter를 1 올려준다.
       await controller.pauseCamera(); // 인식되었으니 카메라를 멈춘다.
-
       setState(() {
         boxcontroller.text = scanData.code as String; // 스캔된 데이터를 담는다.
       });
-
       if (counter == 1) {
-        // QR이 인식 되었을 경우 스캐너를 닫으며 결과를 넘긴다.
+        //await controller.dispose;// QR이 인식 되었을 경우 스캐너를 닫으며 결과를 넘긴다.
         counter = 0;
         Navigator.push(
           context,
